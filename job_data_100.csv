@@ -1,0 +1,101 @@
+likes_math,likes_outdoors,likes_helping,likes_creativity,likes_computers,likes_leadership,job
+1,1,1,1,0,1,Teacher
+0,1,0,1,0,0,Park Ranger
+1,0,1,0,0,0,Engineer
+0,0,0,1,0,1,Paramedic
+0,1,0,1,1,0,Architect
+1,0,0,1,0,1,Graphic Designer
+1,0,1,1,0,1,Social Worker
+0,0,0,1,1,1,Software Developer
+0,0,1,1,0,1,Artist
+0,1,1,1,0,1,Manager
+1,1,1,0,1,0,Nurse
+1,0,1,1,1,1,Doctor
+0,0,0,1,1,1,Pilot
+1,0,0,0,1,1,Flight Attendant
+0,1,0,1,1,0,Construction Worker
+1,1,1,0,0,1,Electrician
+0,1,1,0,0,1,Plumber
+1,1,0,0,1,0,Firefighter
+0,0,1,1,1,0,Police Officer
+1,0,1,0,1,1,Scientist
+0,0,0,0,0,1,Astronomer
+1,0,0,0,0,1,Biologist
+1,0,1,0,1,0,Chemist
+1,0,0,0,0,1,Physicist
+1,1,0,0,0,1,Psychologist
+0,0,1,1,0,1,Therapist
+0,1,0,0,0,0,Veterinarian
+1,1,1,1,1,1,Dentist
+0,1,1,1,0,0,Pharmacist
+0,1,0,0,1,1,Web Developer
+1,0,0,1,1,1,Data Analyst
+1,1,0,1,1,1,AI Researcher
+0,1,1,1,0,1,Chef
+0,0,0,1,0,0,Baker
+1,1,0,1,1,0,Photographer
+1,0,1,1,0,1,Videographer
+0,1,0,0,0,0,Journalist
+0,0,0,0,1,0,Editor
+1,0,1,1,0,1,Writer
+1,0,0,0,1,1,Librarian
+1,0,0,0,1,1,Historian
+0,0,0,0,0,1,Museum Curator
+0,1,1,0,0,0,Zookeeper
+1,0,0,0,1,1,Marine Biologist
+1,1,0,0,0,0,Geologist
+1,0,1,1,1,0,Environmental Scientist
+0,1,0,0,1,0,Meteorologist
+1,0,0,0,0,0,Economist
+1,0,0,0,0,1,Accountant
+0,1,1,0,1,1,Auditor
+1,1,0,1,1,1,Financial Analyst
+0,1,0,1,0,0,Investment Banker
+0,1,1,1,0,0,Entrepreneur
+0,0,1,1,0,1,Business Analyst
+1,0,1,0,0,1,HR Manager
+1,1,0,1,1,0,Salesperson
+0,0,1,1,0,0,Marketing Specialist
+0,0,1,1,0,1,Advertising Executive
+0,0,0,0,0,0,UX Designer
+0,0,1,0,1,0,UI Designer
+0,1,0,1,0,1,Interior Designer
+0,1,0,1,0,0,Fashion Designer
+0,0,0,1,0,0,Mechanic
+1,0,0,0,1,1,Carpenter
+0,0,0,1,1,1,Truck Driver
+1,1,1,0,0,1,Delivery Driver
+1,0,1,0,1,0,Receptionist
+0,1,1,1,1,1,Secretary
+0,1,0,0,0,0,Legal Assistant
+0,1,0,0,0,0,Lawyer
+1,0,0,1,1,1,Judge
+0,1,1,1,1,1,Politician
+1,1,0,0,0,0,Diplomat
+1,0,1,0,1,0,Translator
+1,0,0,0,0,1,Interpreter
+0,0,1,1,1,0,Tour Guide
+1,1,0,0,1,1,Hotel Manager
+0,0,0,1,0,0,Event Planner
+1,0,1,0,0,0,Real Estate Agent
+0,1,0,0,0,0,Property Manager
+1,1,1,1,0,1,Game Developer
+1,1,1,1,0,0,Mobile App Developer
+0,1,1,0,1,1,Cybersecurity Analyst
+1,0,1,1,1,1,Network Engineer
+1,0,0,1,1,0,IT Support
+0,1,0,1,1,0,Systems Administrator
+0,1,0,0,1,1,Database Administrator
+0,1,1,1,0,1,SEO Specialist
+0,0,0,1,1,1,Content Creator
+0,0,0,0,0,0,Influencer
+0,0,0,1,1,1,Social Media Manager
+0,0,1,0,1,1,Teacher Assistant
+0,1,0,0,1,0,Lab Technician
+1,0,0,0,0,1,Quality Inspector
+1,0,0,0,1,1,Machinist
+1,1,1,0,0,1,Factory Worker
+1,1,0,0,0,0,Bartender
+1,1,0,0,1,1,Waiter
+1,1,0,0,0,1,Customer Service Rep
+0,1,1,0,0,1,Call Center Agent
