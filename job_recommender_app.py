@@ -5,7 +5,7 @@ import ast
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import MultiLabelBinarizer
 
-st.set_page_config(page_title="Smart Job Recommender", page_icon="🧠", layout="wide")
+st.set_page_config(page_title="Smart Job Recommender", page_icon="🦖", layout="wide")
 
 # ---------------------- Job Knowledge Base ----------------------
 jobs = [
@@ -44,7 +44,7 @@ salary_pref = st.selectbox("Preferred Salary:", ["Any", "Low", "Medium", "High"]
 degree_pref = st.selectbox("Willing to get a college degree?", ["Any", "Yes", "No"])
 
 with st.form("quiz_form"):
-    st.write("### 🧩 Rate how important these traits are to you")
+    st.write("###  Rate how important these traits are to you")
     weighted_traits = {}
     for q in questions:
         col1, col2 = st.columns([3, 2])
