@@ -1,53 +1,132 @@
 import streamlit as st
 import pandas as pd
-from sklearn.tree import DecisionTreeClassifier
-import numpy as np
+import os
+import ast
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import MultiLabelBinarizer
 
-# Load and train model
-@st.cache_data
-def load_model():
-    data = pd.read_csv('job_data_100.csv')
-    feature_cols = data.columns[:-1].tolist()
-    X = data[feature_cols]
-    y = data["job"]
-    model = DecisionTreeClassifier()
-    model.fit(X, y)
-    return model, feature_cols, model.classes_
+st.set_page_config(page_title="Smart Job Recommender", page_icon="🧠", layout="wide")
 
-model, features, classes = load_model()
+# ---------------------- Job Knowledge Base ----------------------
+jobs = [
+    {"title": "Data Scientist", "traits": {"numbers", "tech", "indoors"}, "salary": "high", "degree": "yes"},
+    {"title": "Doctor", "traits": {"helping", "indoors"}, "salary": "high", "degree": "yes"},
+    {"title": "Construction Worker", "traits": {"outdoors", "physical"}, "salary": "medium", "degree": "no"},
+    {"title": "Teacher", "traits": {"helping", "indoors"}, "salary": "medium", "degree": "yes"},
+    {"title": "Forest Ranger", "traits": {"outdoors", "nature", "physical"}, "salary": "medium", "degree": "no"},
+    {"title": "Software Engineer", "traits": {"tech", "numbers", "indoors"}, "salary": "high", "degree": "yes"},
+    {"title": "Nurse", "traits": {"helping", "physical", "indoors"}, "salary": "medium", "degree": "yes"},
+]
 
-st.title("JobZilla")
-st.write("Answer a few yes/no questions and let the AI suggest a career for you!")
+# ---------------------- Trait Questions ----------------------
+questions = [
+    {"text": "Do you enjoy working with numbers?", "trait": "numbers"},
+    {"text": "Do you enjoy helping people?", "trait": "helping"},
+    {"text": "Do you like working outdoors?", "trait": "outdoors"},
+    {"text": "Are you interested in technology?", "trait": "tech"},
+    {"text": "Do you prefer physical activity in your job?", "trait": "physical"},
+    {"text": "Do you enjoy nature?", "trait": "nature"},
+    {"text": "Do you like working indoors?", "trait": "indoors"},
+]
 
-# Friendly labels for questions
-friendly_labels = {
-    "likes_math": "Do you like math?",
-    "likes_outdoors": "Do you like working outdoors?",
-    "likes_helping": "Do you like helping people?",
-    "likes_creativity": "Do you enjoy being creative?",
-    "likes_computers": "Do you enjoy working with computers?",
-    "likes_leadership": "Do you like taking leadership roles?"
-}
+# ---------------------- User Filters ----------------------
+st.title("🧠 Smart Job Recommender")
+st.markdown("""
+<style>
+    .main { background-color: #f0f4f8; }
+    h1 { color: #30475e; }
+</style>
+""", unsafe_allow_html=True)
 
-user_answers = []
-for feature in features:
-    label = friendly_labels.get(feature, feature)
-    answer = st.radio(label, [1, 0], format_func=lambda x: "Yes" if x == 1 else "No")
-    user_answers.append(answer)
+st.write("Answer the questions and apply filters. We'll find the job that fits you best!")
 
-# Predict button
-if st.button("🎯 Suggest a Job"):
-    probs = model.predict_proba([user_answers])[0]
-    top_idx = np.argmax(probs)
-    top_job = classes[top_idx]
-    confidence = probs[top_idx] * 100
+salary_pref = st.selectbox("Preferred Salary:", ["Any", "Low", "Medium", "High"])
+degree_pref = st.selectbox("Willing to get a college degree?", ["Any", "Yes", "No"])
 
-    st.success(f"✅ Best Match: **{top_job}** ({confidence:.1f}% confidence)")
+with st.form("quiz_form"):
+    st.write("### 🧩 Rate how important these traits are to you")
+    weighted_traits = {}
+    for q in questions:
+        col1, col2 = st.columns([3, 2])
+        with col1:
+            wants = st.radio(q["text"], ["Yes", "No"], key=q["trait"])
+        with col2:
+            weight = st.slider("Importance", 0, 10, 5, key=q["trait"] + "_weight")
+        if wants == "Yes":
+            weighted_traits[q["trait"]] = weight
 
-    # Show top 5 matches
-    st.subheader("🧠 Other Possible Jobs:")
-    top5_indices = probs.argsort()[-5:][::-1]
-    for idx in top5_indices:
-        st.write(f"• {classes[idx]} – {probs[idx]*100:.1f}%")
+    submit = st.form_submit_button("🔍 Find My Job")
 
+# ---------------------- Filtering & Matching ----------------------
+if submit:
+    filtered_jobs = jobs.copy()
+
+    if salary_pref != "Any":
+        filtered_jobs = [job for job in filtered_jobs if job["salary"].lower() == salary_pref.lower()]
+    if degree_pref != "Any":
+        filtered_jobs = [job for job in filtered_jobs if job["degree"] == degree_pref.lower()]
+
+    scored_jobs = []
+    for job in filtered_jobs:
+        match_score = sum(weighted_traits.get(trait, 0) for trait in job["traits"])
+        scored_jobs.append((job["title"], match_score))
+
+    scored_jobs.sort(key=lambda x: x[1], reverse=True)
+
+    if scored_jobs and scored_jobs[0][1] > 0:
+        best_job = scored_jobs[0]
+        st.success(f"🎯 Best match (by rule-based scoring): **{best_job[0]}** (score: {best_job[1]})")
+        st.write("### 🔎 Top Matches:")
+        for title, score in scored_jobs[:3]:
+            st.write(f"- {title} (score: {score})")
+    else:
+        st.warning("No matching jobs found. Try adjusting your preferences.")
+
+    # ---------------------- ML Model Prediction ----------------------
+    model, mlb = None, None
+    if os.path.exists("feedback.csv"):
+        try:
+            data = pd.read_csv("feedback.csv")
+            mlb = MultiLabelBinarizer()
+            X = mlb.fit_transform(data["traits"].apply(ast.literal_eval))
+            y = data["job"]
+            model = RandomForestClassifier()
+            model.fit(X, y)
+
+            user_traits = list(weighted_traits.keys())
+            user_vector = mlb.transform([user_traits])
+            predicted_job = model.predict(user_vector)[0]
+
+            st.info(f"🤖 ML prediction: You might also be a great **{predicted_job}**!")
+        except Exception as e:
+            st.warning(f"⚠️ ML prediction skipped due to error: {str(e)}")
+
+    # ---------------------- Feedback & Learning ----------------------
+    st.write("### 📝 Help Us Improve")
+    feedback_job = st.selectbox("Did you like the recommended job?", [j["title"] for j in jobs])
+    if st.button("Submit Feedback"):
+        user_data = {
+            "traits": list(weighted_traits.keys()),
+            "job": feedback_job
+        }
+        df = pd.DataFrame([user_data])
+
+        if os.path.exists("feedback.csv"):
+            df.to_csv("feedback.csv", mode='a', header=False, index=False)
+        else:
+            df.to_csv("feedback.csv", index=False)
+
+        st.success("✅ Feedback saved! Thank you.")
+
+# ---------------------- Model Training (Offline Optional) ----------------------
+def train_model():
+    if os.path.exists("feedback.csv"):
+        data = pd.read_csv("feedback.csv")
+        mlb = MultiLabelBinarizer()
+        X = mlb.fit_transform(data["traits"].apply(ast.literal_eval))
+        y = data["job"]
+        model = RandomForestClassifier()
+        model.fit(X, y)
+        return model, mlb
+    return None, None
 
