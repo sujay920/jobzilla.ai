@@ -30,7 +30,7 @@ questions = [
 ]
 
 # ---------------------- User Filters ----------------------
-st.title("🧠 Smart Job Recommender")
+st.title("JobZilla")
 st.markdown("""
 <style>
     .main { background-color: #f0f4f8; }
