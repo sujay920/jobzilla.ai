@@ -6,7 +6,7 @@ import numpy as np
 # Load and train model
 @st.cache_data
 def load_model():
-    data = pd.read_csv("job_data_100.csv")
+    data = pd.read_csv('job_data_100.csv')
     feature_cols = data.columns[:-1].tolist()
     X = data[feature_cols]
     y = data["job"]
@@ -16,7 +16,7 @@ def load_model():
 
 model, features, classes = load_model()
 
-st.title("🔮 AI Job Recommender")
+st.title("JobZilla")
 st.write("Answer a few yes/no questions and let the AI suggest a career for you!")
 
 # Friendly labels for questions
@@ -49,3 +49,5 @@ if st.button("🎯 Suggest a Job"):
     top5_indices = probs.argsort()[-5:][::-1]
     for idx in top5_indices:
         st.write(f"• {classes[idx]} – {probs[idx]*100:.1f}%")
+
+
