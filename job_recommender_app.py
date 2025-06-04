@@ -1,132 +1,206 @@
 import streamlit as st
 import pandas as pd
-import os
-import ast
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import MultiLabelBinarizer
+import time
+import openai
+from fpdf import FPDF
+from PIL import Image
+import base64
+import altair as alt
+import io
 
-st.set_page_config(page_title="Smart Job Recommender", page_icon="🦖", layout="wide")
+# ---------------------- OpenAI API Key ----------------------
+openai.api_key = st.secrets.get("OPENAI_API_KEY") or "your-api-key-here"
 
-# ---------------------- Job Knowledge Base ----------------------
-jobs = [
-    {"title": "Data Scientist", "traits": {"numbers", "tech", "indoors"}, "salary": "high", "degree": "yes"},
-    {"title": "Doctor", "traits": {"helping", "indoors"}, "salary": "high", "degree": "yes"},
-    {"title": "Construction Worker", "traits": {"outdoors", "physical"}, "salary": "medium", "degree": "no"},
-    {"title": "Teacher", "traits": {"helping", "indoors"}, "salary": "medium", "degree": "yes"},
-    {"title": "Forest Ranger", "traits": {"outdoors", "nature", "physical"}, "salary": "medium", "degree": "no"},
-    {"title": "Software Engineer", "traits": {"tech", "numbers", "indoors"}, "salary": "high", "degree": "yes"},
-    {"title": "Nurse", "traits": {"helping", "physical", "indoors"}, "salary": "medium", "degree": "yes"},
-]
+# ---------------------- Data ----------------------
+college_course_job_map = {
+    "IIT Bombay - Computer Science": ["Software Engineer", "Data Scientist", "AI Researcher"],
+    "IIM Ahmedabad - MBA": ["Business Analyst", "Marketing Manager", "Operations Lead"],
+    "NIFT Delhi - Fashion Design": ["Fashion Designer", "Stylist", "Product Developer"],
+    "St. Xavier's Mumbai - Psychology": ["Counselor", "HR Specialist", "UX Researcher"],
+    "AIIMS Delhi - Medicine": ["Doctor", "Medical Researcher", "Healthcare Consultant"],
+    "NLSIU Bangalore - Law": ["Corporate Lawyer", "Legal Advisor", "Policy Analyst"]
+}
 
-# ---------------------- Trait Questions ----------------------
-questions = [
-    {"text": "Do you enjoy working with numbers?", "trait": "numbers"},
-    {"text": "Do you enjoy helping people?", "trait": "helping"},
-    {"text": "Do you like working outdoors?", "trait": "outdoors"},
-    {"text": "Are you interested in technology?", "trait": "tech"},
-    {"text": "Do you prefer physical activity in your job?", "trait": "physical"},
-    {"text": "Do you enjoy nature?", "trait": "nature"},
-    {"text": "Do you like working indoors?", "trait": "indoors"},
-]
+job_salary_map = {
+    "Software Engineer": "₹8-30 LPA",
+    "Data Scientist": "₹10-35 LPA",
+    "AI Researcher": "₹12-40 LPA",
+    "Business Analyst": "₹6-20 LPA",
+    "Marketing Manager": "₹8-25 LPA",
+    "Operations Lead": "₹10-30 LPA",
+    "Fashion Designer": "₹3-15 LPA",
+    "Stylist": "₹2-10 LPA",
+    "Product Developer": "₹4-18 LPA",
+    "Counselor": "₹3-12 LPA",
+    "HR Specialist": "₹4-16 LPA",
+    "UX Researcher": "₹6-22 LPA",
+    "Doctor": "₹10-50 LPA",
+    "Medical Researcher": "₹8-25 LPA",
+    "Healthcare Consultant": "₹7-20 LPA",
+    "Corporate Lawyer": "₹10-40 LPA",
+    "Legal Advisor": "₹6-25 LPA",
+    "Policy Analyst": "₹5-20 LPA"
+}
 
-# ---------------------- User Filters ----------------------
-st.title("JobZilla")
-st.markdown("""
-<style>
-    .main { background-color: #f0f4f8; }
-    h1 { color: #30475e; }
-</style>
-""", unsafe_allow_html=True)
+job_description_map = {
+    "Software Engineer": "Develop and maintain software applications and systems.",
+    "Data Scientist": "Analyze data to gain insights and support decision-making.",
+    "AI Researcher": "Design AI models and research machine learning innovations.",
+    "Business Analyst": "Identify business needs and recommend solutions.",
+    "Marketing Manager": "Develop strategies to promote products and services.",
+    "Operations Lead": "Manage and optimize business operations.",
+    "Fashion Designer": "Create clothing and accessories based on trends.",
+    "Stylist": "Coordinate outfits for clients and fashion shoots.",
+    "Product Developer": "Design and improve products from concept to launch.",
+    "Counselor": "Provide mental health support and guidance.",
+    "HR Specialist": "Manage recruitment, employee relations, and policies.",
+    "UX Researcher": "Improve user experience through research and testing.",
+    "Doctor": "Diagnose and treat illnesses, improve patient health.",
+    "Medical Researcher": "Conduct studies to advance medical science.",
+    "Healthcare Consultant": "Advise hospitals and clinics on improving care and efficiency.",
+    "Corporate Lawyer": "Handle business legal issues, contracts, and compliance.",
+    "Legal Advisor": "Provide expert legal guidance to organizations.",
+    "Policy Analyst": "Research and recommend public policy solutions."
+}
 
-st.write("Answer the questions and apply filters. We'll find the job that fits you best!")
+# Map jobs to comic images (make sure these exist in your folder)
+job_comics = {
+    "Software Engineer": "comics/software_engineer.png",
+    "Data Scientist": "comics/data_scientist.png",
+    "AI Researcher": "comics/ai_researcher.png",
+    "Business Analyst": "comics/business_analyst.png",
+    "Marketing Manager": "comics/marketing_manager.png",
+    "Operations Lead": "comics/operations_lead.png",
+    "Fashion Designer": "comics/fashion_designer.png",
+    "Stylist": "comics/stylist.png",
+    "Product Developer": "comics/product_developer.png",
+    "Counselor": "comics/counselor.png",
+    "HR Specialist": "comics/hr_specialist.png",
+    "UX Researcher": "comics/ux_researcher.png",
+    "Doctor": "comics/doctor.png",
+    "Medical Researcher": "comics/medical_researcher.png",
+    "Healthcare Consultant": "comics/healthcare_consultant.png",
+    "Corporate Lawyer": "comics/corporate_lawyer.png",
+    "Legal Advisor": "comics/legal_advisor.png",
+    "Policy Analyst": "comics/policy_analyst.png"
+}
 
-salary_pref = st.selectbox("Preferred Salary:", ["Any", "Low", "Medium", "High"])
-degree_pref = st.selectbox("Willing to get a college degree?", ["Any", "Yes", "No"])
+# ---------------------- Streamlit App ----------------------
+st.set_page_config(page_title="Jobzilla AI", layout="wide")
+st.title("🦖 Jobzilla AI – Your Career Companion")
 
-with st.form("quiz_form"):
-    st.write("###  Rate how important these traits are to you")
-    weighted_traits = {}
-    for q in questions:
-        col1, col2 = st.columns([3, 2])
-        with col1:
-            wants = st.radio(q["text"], ["Yes", "No"], key=q["trait"])
-        with col2:
-            weight = st.slider("Importance", 0, 10, 5, key=q["trait"] + "_weight")
-        if wants == "Yes":
-            weighted_traits[q["trait"]] = weight
+with st.sidebar:
+    st.header("🔧 Customize Jobzilla")
+    user_name = st.text_input("👤 Your Name")
+    grade = st.selectbox("🎓 Current Level", ["9", "10", "11", "12", "Undergraduate", "Postgraduate"])
+    fav_subjects = st.multiselect("📘 Favorite Subjects", ["Math", "Biology", "Art", "Economics", "Physics", "History", "English", "Psychology", "Computer Science"])
+    skills = st.text_area("🛠 Skills (comma-separated)")
+    dream_job = st.text_input("🌟 Dream Job (optional)")
+    college_choice = st.selectbox("🏫 College + Course", list(college_course_job_map.keys()))
+    location_pref = st.text_input("📍Preferred Job Location")
+    start = st.button("🔮 Show Jobzilla Suggestions")
 
-    submit = st.form_submit_button("🔍 Find My Job")
+if start:
+    st.success(f"Hi {user_name or 'Friend'}, here's what Jobzilla found for you!")
+    time.sleep(1)
 
-# ---------------------- Filtering & Matching ----------------------
-if submit:
-    filtered_jobs = jobs.copy()
+    suggested_jobs = college_course_job_map.get(college_choice, [])
+    st.subheader("💼 Suggested Careers")
+    for job in suggested_jobs:
+        st.markdown(f"### {job}")
+        st.write(job_description_map.get(job, "No description available."))
+        st.write(f"💰 **Salary Range:** {job_salary_map.get(job, 'N/A')}")
+        st.markdown("---")
 
-    if salary_pref != "Any":
-        filtered_jobs = [job for job in filtered_jobs if job["salary"].lower() == salary_pref.lower()]
-    if degree_pref != "Any":
-        filtered_jobs = [job for job in filtered_jobs if job["degree"] == degree_pref.lower()]
+    # Interactive Salary Chart with Altair
+    st.subheader("📊 Salary Comparison")
+    min_lpa = [int(job_salary_map[j].split('-')[0].replace('₹','')) for j in suggested_jobs]
+    max_lpa = [int(job_salary_map[j].split('-')[1].replace(' LPA','')) for j in suggested_jobs]
+    chart_data = pd.DataFrame({
+        'Job Role': suggested_jobs * 2,
+        'Salary (LPA)': min_lpa + max_lpa,
+        'Type': ['Min']*len(min_lpa) + ['Max']*len(max_lpa)
+    })
 
-    scored_jobs = []
-    for job in filtered_jobs:
-        match_score = sum(weighted_traits.get(trait, 0) for trait in job["traits"])
-        scored_jobs.append((job["title"], match_score))
+    chart = alt.Chart(chart_data).mark_bar().encode(
+        x=alt.X('Salary (LPA):Q'),
+        y=alt.Y('Job Role:N', sort='-x'),
+        color='Type:N',
+        tooltip=['Job Role', 'Salary (LPA)', 'Type']
+    ).properties(height=400)
+    st.altair_chart(chart, use_container_width=True)
 
-    scored_jobs.sort(key=lambda x: x[1], reverse=True)
+    # Resume Tip
+    st.subheader("📝 Resume Tip")
+    skill_keywords = [s.strip() for s in skills.split(',') if s.strip()]
+    resume_example = f"- Utilized {skill_keywords[0] if skill_keywords else 'core'} skills in {fav_subjects[0] if fav_subjects else 'studies'} to pursue opportunities as a {suggested_jobs[0]}"
+    st.code(resume_example)
 
-    if scored_jobs and scored_jobs[0][1] > 0:
-        best_job = scored_jobs[0]
-        st.success(f"🎯 Best match (by rule-based scoring): **{best_job[0]}** (score: {best_job[1]})")
-        st.write("### 🔎 Top Matches:")
-        for title, score in scored_jobs[:3]:
-            st.write(f"- {title} (score: {score})")
-    else:
-        st.warning("No matching jobs found. Try adjusting your preferences.")
+    # Career Location Advice
+    st.subheader("📍 Career Location Advice")
+    st.markdown(f"Jobs in **{location_pref or 'India'}** are growing in fields like **{suggested_jobs[0]}** and more. Consider local demand and growth trends.")
 
-    # ---------------------- ML Model Prediction ----------------------
-    model, mlb = None, None
-    if os.path.exists("feedback.csv"):
-        try:
-            data = pd.read_csv("feedback.csv")
-            mlb = MultiLabelBinarizer()
-            X = mlb.fit_transform(data["traits"].apply(ast.literal_eval))
-            y = data["job"]
-            model = RandomForestClassifier()
-            model.fit(X, y)
-
-            user_traits = list(weighted_traits.keys())
-            user_vector = mlb.transform([user_traits])
-            predicted_job = model.predict(user_vector)[0]
-
-            st.info(f"🤖 ML prediction: You might also be a great **{predicted_job}**!")
-        except Exception as e:
-            st.warning(f"⚠️ ML prediction skipped due to error: {str(e)}")
-
-    # ---------------------- Feedback & Learning ----------------------
-    st.write("### 📝 Help Us Improve")
-    feedback_job = st.selectbox("Did you like the recommended job?", [j["title"] for j in jobs])
-    if st.button("Submit Feedback"):
-        user_data = {
-            "traits": list(weighted_traits.keys()),
-            "job": feedback_job
-        }
-        df = pd.DataFrame([user_data])
-
-        if os.path.exists("feedback.csv"):
-            df.to_csv("feedback.csv", mode='a', header=False, index=False)
+    # Dynamic Comic Visuals
+    st.subheader("🎨 Jobzilla Comic Preview")
+    for job in suggested_jobs:
+        comic_file = job_comics.get(job)
+        if comic_file:
+            try:
+                st.image(comic_file, caption=f"{job} - Career Hero 🦖")
+            except Exception:
+                st.warning(f"Comic image for {job} not found.")
         else:
-            df.to_csv("feedback.csv", index=False)
+            st.info(f"No comic available for {job}.")
 
-        st.success("✅ Feedback saved! Thank you.")
+    # Enhanced PDF Report with Images
+    st.subheader("📤 Download Your Report (PDF)")
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=14)
+    pdf.cell(0, 10, f"Jobzilla Report for {user_name or 'Student'}", ln=True, align='C')
+    pdf.ln(10)
+    pdf.set_font("Arial", size=12)
+    pdf.cell(0, 10, f"College Chosen: {college_choice}", ln=True)
+    pdf.ln(5)
+    for job in suggested_jobs:
+        pdf.cell(0, 10, f"- {job}: {job_description_map.get(job)} (Salary: {job_salary_map.get(job)})", ln=True)
+        # Add comic image if exists
+        comic_file = job_comics.get(job)
+        if comic_file:
+            try:
+                pdf.image(comic_file, w=50)
+                pdf.ln(55)
+            except:
+                pass
+    pdf_output = f"{user_name or 'Jobzilla'}_report.pdf"
+    pdf_buffer = io.BytesIO()
+    pdf.output(pdf_buffer)
+    pdf_bytes = pdf_buffer.getvalue()
+    b64 = base64.b64encode(pdf_bytes).decode()
+    href = f'<a href="data:application/pdf;base64,{b64}" download="{pdf_output}">📄 Download PDF</a>'
+    st.markdown(href, unsafe_allow_html=True)
 
-# ---------------------- Model Training (Offline Optional) ----------------------
-def train_model():
-    if os.path.exists("feedback.csv"):
-        data = pd.read_csv("feedback.csv")
-        mlb = MultiLabelBinarizer()
-        X = mlb.fit_transform(data["traits"].apply(ast.literal_eval))
-        y = data["job"]
-        model = RandomForestClassifier()
-        model.fit(X, y)
-        return model, mlb
-    return None, None
+    # Improved AI Q&A with Example Questions Dropdown
+    st.subheader("🤖 Ask Jobzilla (powered by OpenAI)")
+    example_questions = [
+        "What jobs can I get with a Computer Science degree?",
+        "What skills do I need to become a Data Scientist?",
+        "How do I prepare for a career in Medicine?",
+        "What are the job prospects after an MBA?",
+        "Can you suggest resume tips for a Marketing Manager?"
+    ]
+    user_question = st.selectbox("Choose a question or type your own:", [""] + example_questions)
+    if user_question:
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": "You are Jobzilla, a friendly career advisor for students in India."},
+                    {"role": "user", "content": user_question}
+                ]
+            )
+            st.write(response["choices"][0]["message"]["content"])
+        except Exception as e:
+            st.error("OpenAI API Error: " + str(e))
+
 
