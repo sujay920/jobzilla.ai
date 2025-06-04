@@ -1,6 +1,6 @@
 streamlit
-pandas
 openai
 fpdf
-Pillow
-altair
+pillow
+streamlit-lottie
+requests
