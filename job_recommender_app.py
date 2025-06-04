@@ -22,15 +22,6 @@ def load_lottieurl(url):
     return None
 
 # ---------------------- Data Maps ----------------------
-college_course_job_map = {
-    "IIT Bombay - Computer Science": ["Software Engineer", "Data Scientist", "AI Researcher"],
-    "IIM Ahmedabad - MBA": ["Business Analyst", "Marketing Manager", "Operations Lead"],
-    "NIFT Delhi - Fashion Design": ["Fashion Designer", "Stylist", "Product Developer"],
-    "St. Xavier's Mumbai - Psychology": ["Counselor", "HR Specialist", "UX Researcher"],
-    "AIIMS Delhi - Medicine": ["Doctor", "Medical Researcher", "Healthcare Consultant"],
-    "NLSIU Bangalore - Law": ["Corporate Lawyer", "Legal Advisor", "Policy Analyst"]
-}
-
 job_salary_map = {
     "Software Engineer": "₹8-30 LPA",
     "Data Scientist": "₹10-35 LPA",
@@ -77,10 +68,10 @@ job_description_map = {
 st.set_page_config(page_title="Jobzilla AI", layout="wide")
 st.title("🦖 Jobzilla AI – Your Career Companion")
 
-# Banner Animation
-lottie_career = load_lottieurl("https://assets8.lottiefiles.com/packages/lf20_tno6cg2w.json")
-if lottie_career:
-    st_lottie(lottie_career, height=200)
+# Banner Animation (Jobzilla-style animation)
+lottie_jobzilla = load_lottieurl("https://lottie.host/e54d5919-c889-4d92-8fef-4b8fa083b4c1/84T1YxPHsm.json")
+if lottie_jobzilla:
+    st_lottie(lottie_jobzilla, height=250)
 
 # Sidebar Form
 with st.sidebar:
@@ -90,7 +81,6 @@ with st.sidebar:
     fav_subjects = st.multiselect("📘 Favorite Subjects", ["Math", "Biology", "Art", "Economics", "Physics", "History", "English", "Psychology", "Computer Science"])
     skills = st.text_area("🛠 Skills (comma-separated)")
     dream_job = st.text_input("🌟 Dream Job (optional)")
-    college_choice = st.selectbox("🏫 College + Course", list(college_course_job_map.keys()))
     location_pref = st.text_input("📍Preferred Job Location")
     start = st.button("🔮 Show Jobzilla Suggestions")
 
@@ -99,8 +89,9 @@ if start:
     st.success(f"Hi {user_name or 'Friend'}, here's what Jobzilla found for you!")
     time.sleep(1)
 
-    suggested_jobs = college_course_job_map.get(college_choice, [])
-    
+    # Job Recommendation Placeholder
+    suggested_jobs = ["Software Engineer", "Data Scientist", "AI Researcher"]
+
     # Career Suggestions
     st.subheader("💼 Suggested Careers")
     for job in suggested_jobs:
@@ -131,21 +122,12 @@ if start:
     st.subheader("📍 Career Location Advice")
     st.markdown(f"Jobs in **{location_pref or 'India'}** are growing in fields like **{suggested_jobs[0]}**. Stay updated with local trends.")
 
-    # Comic Preview
-    st.subheader("🎨 Jobzilla Comic Preview")
-    comic_path = "jobzilla_comic.png"
-    try:
-        st.image(comic_path, caption="Meet Jobzilla - The Career Hero! 🦖")
-    except:
-        st.warning("Comic not found. Ensure 'jobzilla_comic.png' is in the directory.")
-
     # Report Generator
     st.subheader("📤 Download Your Report (PDF)")
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
     pdf.cell(200, 10, txt=f"Jobzilla Report for {user_name or 'Student'}", ln=True, align='C')
-    pdf.cell(200, 10, txt=f"College Chosen: {college_choice}", ln=True)
     for job in suggested_jobs:
         desc = job_description_map.get(job)
         sal = job_salary_map.get(job)
