@@ -144,7 +144,8 @@ if start:
 
     suggestions = []
     for job in job_description_map:
-        if dream_job.lower() in job.lower() or any(subj.lower() in job.lower() for subj in fav_subjects):
+        # match dream job or favorite subjects with job name (case insensitive)
+        if (dream_job and dream_job.lower() in job.lower()) or any(subj.lower() in job.lower() for subj in fav_subjects):
             suggestions.append(job)
     if not suggestions:
         suggestions = list(job_description_map.keys())[:5]
@@ -206,20 +207,19 @@ if start:
         href = f'<a href="data:application/pdf;base64,{b64}" download="{pdf_output}">📄 Download PDF</a>'
         st.markdown(href, unsafe_allow_html=True)
 
-# ---------------------- AI Chat Feature ----------------------
-st.subheader("🤖 Ask Jobzilla")
-user_question = st.text_input("Ask a career question")
-if user_question:
-    try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are Jobzilla, a friendly Indian career advisor."},
-                {"role": "user", "content": user_question}
-            ]
-        )
-        answer = response["choices"][0]["message"]["content"]
-        st.write(answer)
-    except Exception as e:
-        st.error(f"OpenAI API call failed: {e}")
-
+    # ---------------- AI Chat Feature ----------------
+    st.subheader("🤖 Ask Jobzilla")
+    user_question = st.text_input("Ask a career question")
+    if user_question:
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are Jobzilla, a friendly Indian career advisor."},
+                    {"role": "user", "content": user_question}
+                ]
+            )
+            answer = response.choices[0].message.content
+            st.write(answer)
+        except Exception as e:
+            st.error("OpenAI API Error: " + str(e))
