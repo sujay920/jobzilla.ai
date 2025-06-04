@@ -198,14 +198,18 @@ if start:
         href = f'<a href="data:application/pdf;base64,{b64}" download="{pdf_output}">📄 Download PDF</a>'
         st.markdown(href, unsafe_allow_html=True)
 
-    st.subheader("🤖 Ask Jobzilla")
-    user_question = st.text_input("Ask a career question")
-    if user_question:
-        try:
-            model = genai.GenerativeModel("gemini-pro")
-            convo = model.start_chat()
-            convo.send_message(user_question)
-            st.markdown(f"**Jobzilla Says:** {convo.last.text}")
-        except Exception as e:
-            st.error(f"⚠️ AI feature error: {e}")
+st.subheader("🤖 Ask Jobzilla")
+user_question = st.text_input("Ask a career question")
+
+if "GEMINI_API_KEY" not in st.secrets:
+    st.warning("⚠️ Gemini API key not found. Please add it in Streamlit Cloud > Secrets.")
+elif user_question:
+    try:
+        model = genai.GenerativeModel("gemini-pro")
+        convo = model.start_chat()
+        convo.send_message(user_question)
+        st.markdown(f"**Jobzilla Says:** {convo.last.text}")
+    except Exception as e:
+        st.error(f"⚠️ AI feature error: {e}")
+
 
