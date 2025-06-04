@@ -69,14 +69,15 @@ st.set_page_config(page_title="Jobzilla AI", layout="wide")
 st.title("🦖 Jobzilla AI – Your Career Companion")
 
 # New Animation
-lottie_career = load_lottieurl("https://lottie.host/5276e104-3e82-47a4-a869-caa7e7491be3/M5thCkC2aF.json")
+lottie_career = load_lottieurl("https://lottie.host/2d27e92a-bd61-4537-a5df-3f9e19a46f3f/T7sSB9yzUb.json")
 if lottie_career:
     st_lottie(lottie_career, height=250, speed=1.2)
 else:
-    st.info("👀 Animation could not be loaded.")
+    st.info(" Animation could not be loaded.")
+
 
 # Profile Input (no sidebar)
-st.header("🔧 Customize Jobzilla")
+st.header("Customize Jobzilla")
 user_name = st.text_input("👤 Your Name")
 grade = st.selectbox("🎓 Current Level", ["9", "10", "11", "12", "Undergraduate", "Postgraduate"])
 fav_subjects = st.multiselect("📘 Favorite Subjects", ["Math", "Biology", "Art", "Economics", "Physics", "History", "English", "Psychology", "Computer Science"])
