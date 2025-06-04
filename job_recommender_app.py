@@ -76,11 +76,12 @@ st.markdown("""
         text-align: center;
     }
     .job-card {
-        background-color: #f4f4f4;
+        background-color: #222222;
         border-radius: 12px;
         padding: 15px;
         margin-bottom: 10px;
         box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+        color: white;
     }
     </style>
 """, unsafe_allow_html=True)
