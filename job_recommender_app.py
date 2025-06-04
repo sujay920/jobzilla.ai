@@ -211,15 +211,22 @@ if start:
     st.subheader("🤖 Ask Jobzilla")
     user_question = st.text_input("Ask a career question")
     if user_question:
-        try:
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": "You are Jobzilla, a friendly Indian career advisor."},
-                    {"role": "user", "content": user_question}
-                ]
-            )
-            answer = response.choices[0].message.content
-            st.write(answer)
-        except Exception as e:
-            st.error("OpenAI API Error: " + str(e))
+       from openai import OpenAI  # Add this import at top of your file (if not there)
+
+# Initialize OpenAI client once (somewhere at top, after API key setup)
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+
+# Inside your Streamlit interaction block where user_question is used:
+if user_question:
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",  # or "gpt-4" if you have access
+            messages=[
+                {"role": "system", "content": "You are Jobzilla, a friendly Indian career advisor."},
+                {"role": "user", "content": user_question}
+            ]
+        )
+        answer = response.choices[0].message.content
+        st.write(answer)
+    except Exception as e:
+        st.error(f"OpenAI API Error: {e}")
