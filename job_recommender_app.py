@@ -130,9 +130,14 @@ if start:
         st_lottie(lottie_results, height=200, speed=1)
 
     suggestions = []
-    for job in job_description_map:
-        if dream_job.lower() in job.lower() or any(subj.lower() in job.lower() for subj in fav_subjects):
-            suggestions.append(job)
+    if dream_job:
+        for job in job_description_map:
+            if dream_job.lower() in job.lower():
+                suggestions.append(job)
+    if not suggestions:
+        for job in job_description_map:
+            if any(subj.lower() in job.lower() for subj in fav_subjects):
+                suggestions.append(job)
     if not suggestions:
         suggestions = list(job_description_map.keys())[:5]
 
@@ -196,14 +201,6 @@ if start:
     st.subheader("🤖 Ask Jobzilla")
     user_question = st.text_input("Ask a career question")
     if user_question:
-    try:
-        model = genai.GenerativeModel('gemini-pro')
+        model = genai.GenerativeModel("gemini-pro")
         response = model.generate_content(user_question)
-        if hasattr(response, 'text'):
-            st.markdown(f"**💬 Jobzilla AI says:** {response.text}")
-        else:
-            st.warning("⚠️ No response from the AI.")
-    except Exception as e:
-        st.error(f"Gemini API Error: {e}")
-
-
+        st.markdown(f"**Jobzilla Says:** {response.text}")
