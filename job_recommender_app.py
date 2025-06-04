@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import time
+import csv
 from fpdf import FPDF
 from PIL import Image
 import base64
@@ -22,7 +23,22 @@ def load_lottieurl(url):
         return None
     return None
 
+def save_user_data(name, grade, fav_subjects, skills, dream_job, location, suggestions):
+    with open("user_logs.csv", "a", newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow([name, grade, ",".join(fav_subjects), skills, dream_job, location, ",".join(suggestions)])
+
 # ---------------------- Data Maps ----------------------
+subject_career_map = {
+    "Math": ["Data Scientist", "Business Analyst", "AI Researcher", "Software Engineer"],
+    "Biology": ["Doctor", "Medical Researcher", "Healthcare Consultant"],
+    "Art": ["Fashion Designer", "Stylist", "UX Researcher"],
+    "Economics": ["Business Analyst", "Policy Analyst", "Marketing Manager"],
+    "Physics": ["AI Researcher", "Software Engineer"],
+    "Psychology": ["Counselor", "HR Specialist", "UX Researcher"],
+    "Computer Science": ["Software Engineer", "AI Researcher", "Data Scientist"],
+}
+
 job_salary_map = {
     "Software Engineer": "8-30 LPA",
     "Data Scientist": "10-35 LPA",
@@ -130,16 +146,27 @@ if start:
         st_lottie(lottie_results, height=200, speed=1)
 
     suggestions = []
-    if dream_job:
-        for job in job_description_map:
-            if dream_job.lower() in job.lower():
-                suggestions.append(job)
-    if not suggestions:
-        for job in job_description_map:
-            if any(subj.lower() in job.lower() for subj in fav_subjects):
-                suggestions.append(job)
+    skill_keywords = [s.strip() for s in skills.split(',') if s.strip()]
+    job_scores = {}
+
+    for job in job_description_map:
+        score = 0
+        if dream_job and dream_job.lower() in job.lower():
+            score += 3
+        for subj in fav_subjects:
+            if job in subject_career_map.get(subj, []):
+                score += 2
+        for skill in skill_keywords:
+            if skill.lower() in job.lower():
+                score += 1
+        job_scores[job] = score
+
+    sorted_jobs = sorted(job_scores.items(), key=lambda x: x[1], reverse=True)
+    suggestions = [job for job, score in sorted_jobs if score > 0][:5]
     if not suggestions:
         suggestions = list(job_description_map.keys())[:5]
+
+    save_user_data(user_name, grade, fav_subjects, skills, dream_job, location_pref, suggestions)
 
     st.subheader("💼 Suggested Careers")
     for job in suggestions:
@@ -171,7 +198,6 @@ if start:
     st.bar_chart(chart_data.set_index("Job Role"))
 
     st.subheader("📝 Resume Tip")
-    skill_keywords = [s.strip() for s in skills.split(',') if s.strip()]
     if skill_keywords and fav_subjects:
         resume_example = f"- Utilized {skill_keywords[0]} skills in {fav_subjects[0]} to explore careers in {suggestions[0]}"
     else:
@@ -198,6 +224,7 @@ if start:
         href = f'<a href="data:application/pdf;base64,{b64}" download="{pdf_output}">📄 Download PDF</a>'
         st.markdown(href, unsafe_allow_html=True)
 
+# ---------------------- Gemini AI Feature ----------------------
 st.subheader("🤖 Ask Jobzilla")
 user_question = st.text_input("Ask a career question")
 
@@ -206,10 +233,7 @@ if "GEMINI_API_KEY" not in st.secrets:
 elif user_question:
     try:
         model = genai.GenerativeModel("gemini-pro")
-        convo = model.start_chat()
-        convo.send_message(user_question)
-        st.markdown(f"**Jobzilla Says:** {convo.last.text}")
+        response = model.generate_content(user_question)
+        st.markdown(f"**Jobzilla Says:** {response.text}")
     except Exception as e:
         st.error(f"⚠️ AI feature error: {e}")
-
-
