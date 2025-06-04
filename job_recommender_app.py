@@ -211,7 +211,7 @@ if start:
     if user_question:
         try:
             response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo"
+                model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "You are Jobzilla, a friendly Indian career advisor."},
                     {"role": "user", "content": user_question}
