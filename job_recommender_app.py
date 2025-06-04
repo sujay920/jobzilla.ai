@@ -232,7 +232,7 @@ if "GEMINI_API_KEY" not in st.secrets:
     st.warning("⚠️ Gemini API key not found. Please add it in Streamlit Cloud > Secrets.")
 elif user_question:
     try:
-        model = genai.GenerativeModel("gemini-pro")
+        model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(user_question)
         st.markdown(f"**Jobzilla Says:** {response.text}")
     except Exception as e:
