@@ -82,29 +82,82 @@ job_description_map = {
 }
 
 # ---------------------- Streamlit App UI ----------------------
-st.set_page_config(page_title="Jobzilla AI", layout="wide")
-st.markdown("""
-    <style>
-    .title {
-        font-size: 40px;
-        color: #00BFFF;
-        font-weight: bold;
-        text-align: center;
-    }
-    .job-card {
-        background-color: #222222;
-        border-radius: 12px;
-        padding: 15px;
-        margin-bottom: 10px;
-        box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
-        color: white;
-    }
-    </style>
-""", unsafe_allow_html=True)
 
-st.markdown('<div class="title">🦖 Jobzilla AI – Your Career Companion </div>', unsafe_allow_html=True)
+# --- Theme Toggling ---
+# Initialize session state for theme if not already set
+if "theme" not in st.session_state:
+    st.session_state.theme = "dark" # Default theme
+
+# Function to toggle theme
+def toggle_theme():
+    if st.session_state.theme == "dark":
+        st.session_state.theme = "light"
+    else:
+        st.session_state.theme = "dark"
+
+# Place the toggle button in the sidebar or a fixed position
+with st.sidebar:
+    st.button("Toggle Theme", on_click=toggle_theme)
+
+# Set page config based on the current theme
+st.set_page_config(
+    page_title="Jobzilla AI",
+    layout="wide",
+    initial_sidebar_state="expanded", # You might want to keep the sidebar expanded
+    # The theme parameter controls the overall Streamlit widgets and background
+    # This feature is available in Streamlit 1.10.0 and above
+    # For older versions, you'd rely purely on custom CSS
+    theme=st.session_state.theme
+)
+
+# Custom CSS for specific elements that Streamlit's theme doesn't fully control
+# This is crucial for your 'job-card' and potentially other custom elements
+if st.session_state.theme == "dark":
+    st.markdown("""
+        <style>
+        .title {
+            font-size: 40px;
+            color: #00BFFF; /* Bright blue for dark mode */
+            font-weight: bold;
+            text-align: center;
+        }
+        .job-card {
+            background-color: #222222; /* Dark background for cards */
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+            color: white; /* White text for dark mode cards */
+        }
+        /* Add other dark mode specific styles if needed */
+        </style>
+    """, unsafe_allow_html=True)
+else: # Light mode
+    st.markdown("""
+        <style>
+        .title {
+            font-size: 40px;
+            color: #1E90FF; /* Slightly darker blue for light mode */
+            font-weight: bold;
+            text-align: center;
+        }
+        .job-card {
+            background-color: #F0F2F6; /* Light background for cards */
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+            color: #333333; /* Darker text for light mode cards */
+        }
+        /* Add other light mode specific styles if needed */
+        </style>
+    """, unsafe_allow_html=True)
+
+st.markdown('<div class="title">✨ Jobzilla AI – Your Career Companion ✨</div>', unsafe_allow_html=True)
+
 
 # ---------------------- Animations ----------------------
+st.markdown("## ✨ Welcome to Jobzilla")
 col1, col2 = st.columns(2)
 with col1:
     lottie_1 = load_lottieurl("https://assets1.lottiefiles.com/packages/lf20_qp1q7mct.json")
@@ -227,11 +280,14 @@ if start:
 st.subheader("🤖 Ask Jobzilla")
 user_question = st.text_input("Ask a career question")
 
+# Correcting the model name as discussed previously
+GEMINI_MODEL = "gemini-1.5-flash" # Or "gemini-1.5-pro" if you prefer
+
 if "GEMINI_API_KEY" not in st.secrets:
     st.warning("⚠️ Gemini API key not found. Please add it in Streamlit Cloud > Secrets.")
 elif user_question:
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel(GEMINI_MODEL)
         response = model.generate_content(user_question)
         st.markdown(f"**Jobzilla Says:** {response.text}")
     except Exception as e:
