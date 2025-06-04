@@ -196,9 +196,14 @@ if start:
     st.subheader("🤖 Ask Jobzilla")
     user_question = st.text_input("Ask a career question")
     if user_question:
-        try:
-            model = genai.GenerativeModel('gemini-pro')
-            response = model.generate_content(user_question)
-            st.write(response.text)
-        except Exception as e:
-            st.error(f"Gemini API Error: {e}")
+    try:
+        model = genai.GenerativeModel('gemini-pro')
+        response = model.generate_content(user_question)
+        if hasattr(response, 'text'):
+            st.markdown(f"**💬 Jobzilla AI says:** {response.text}")
+        else:
+            st.warning("⚠️ No response from the AI.")
+    except Exception as e:
+        st.error(f"Gemini API Error: {e}")
+
+
