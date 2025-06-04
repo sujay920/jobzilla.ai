@@ -102,10 +102,9 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="title">✨ Jobzilla AI – Your Career Companion ✨</div>', unsafe_allow_html=True)
+st.markdown('<div class="title">🦖 Jobzilla AI – Your Career Companion </div>', unsafe_allow_html=True)
 
 # ---------------------- Animations ----------------------
-st.markdown("## ✨ Welcome to Jobzilla")
 col1, col2 = st.columns(2)
 with col1:
     lottie_1 = load_lottieurl("https://assets1.lottiefiles.com/packages/lf20_qp1q7mct.json")
