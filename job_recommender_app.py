@@ -21,6 +21,15 @@ def load_lottieurl(url):
         return None
     return None
 
+def extract_min_max(salary_str):
+    try:
+        parts = salary_str.replace(' LPA', '').split('-')
+        min_val = int(parts[0].strip())
+        max_val = int(parts[1].strip())
+        return min_val, max_val
+    except:
+        return None, None
+
 # ---------------------- Data Maps ----------------------
 job_salary_map = {
     "Software Engineer": "8-30 LPA",
@@ -66,32 +75,30 @@ job_description_map = {
 
 # ---------------------- Streamlit App UI ----------------------
 st.set_page_config(page_title="Jobzilla AI", layout="wide")
-st.title("🦖 Jobzilla AI – Your Career Companion")
+st.title("\U0001F996 Jobzilla AI – Your Career Companion")
 
-# New Animation
-lottie_career = load_lottieurl("https://lottie.host/2d27e92a-bd61-4537-a5df-3f9e19a46f3f/T7sSB9yzUb.json")
+# Animation
+lottie_career = load_lottieurl("https://lottie.host/8d234c52-0ff4-49a3-b9c7-64d688a3ad2c/3oCvOnqQMQ.json")
 if lottie_career:
     st_lottie(lottie_career, height=250, speed=1.2)
 else:
-    st.info(" Animation could not be loaded.")
+    st.info("Animation could not be loaded.")
 
-
-# Profile Input (no sidebar)
+# Profile Input
 st.header("Customize Jobzilla")
-user_name = st.text_input("👤 Your Name")
-grade = st.selectbox("🎓 Current Level", ["9", "10", "11", "12", "Undergraduate", "Postgraduate"])
-fav_subjects = st.multiselect("📘 Favorite Subjects", ["Math", "Biology", "Art", "Economics", "Physics", "History", "English", "Psychology", "Computer Science"])
-skills = st.text_area("🛠 Skills (comma-separated)")
-dream_job = st.text_input("🌟 Dream Job (optional)")
-location_pref = st.text_input("📍Preferred Job Location")
-start = st.button("🔮 Show Jobzilla Suggestions")
+user_name = st.text_input("\U0001F464 Your Name")
+grade = st.selectbox("\U0001F393 Current Level", ["9", "10", "11", "12", "Undergraduate", "Postgraduate"])
+fav_subjects = st.multiselect("\U0001F4D8 Favorite Subjects", ["Math", "Biology", "Art", "Economics", "Physics", "History", "English", "Psychology", "Computer Science"])
+skills = st.text_area("\U0001F6E0 Skills (comma-separated)")
+dream_job = st.text_input("\U0001F31F Dream Job (optional)")
+location_pref = st.text_input("\U0001F4CD Preferred Job Location")
+start = st.button("\U0001F52E Show Jobzilla Suggestions")
 
 # ---------------------- Main Logic ----------------------
 if start:
     st.success(f"Hi {user_name or 'Friend'}, here's what Jobzilla found for you!")
     time.sleep(1.5)
 
-    # Match jobs based on dream job and favorite subjects/skills
     suggestions = []
     for job in job_description_map:
         if dream_job.lower() in job.lower() or any(subj.lower() in job.lower() for subj in fav_subjects):
@@ -99,25 +106,32 @@ if start:
     if not suggestions:
         suggestions = list(job_description_map.keys())[:5]
 
-    st.subheader("💼 Suggested Careers")
+    st.subheader("\U0001F4BC Suggested Careers")
     for job in suggestions:
         with st.container():
-            st.markdown(f"#### 🎯 {job}")
+            st.markdown(f"#### \U0001F3AF {job}")
             st.markdown(f"**Description:** {job_description_map.get(job)}")
-            st.markdown(f"**💰 Salary Range:** {job_salary_map.get(job)} LPA")
+            st.markdown(f"**\U0001F4B0 Salary Range:** {job_salary_map.get(job)}")
             st.markdown("---")
 
     # Salary Chart
-    st.subheader("📊 Salary Comparison")
+    st.subheader("\U0001F4CA Salary Comparison")
+    min_lpa, max_lpa = [], []
+    for job in suggestions:
+        sal_str = job_salary_map.get(job, "")
+        min_val, max_val = extract_min_max(sal_str)
+        min_lpa.append(min_val)
+        max_lpa.append(max_val)
+
     chart_data = pd.DataFrame({
         'Job Role': suggestions,
-        'Minimum LPA': [int(job_salary_map[j].split('-')[0]) for j in suggestions],
-        'Maximum LPA': [int(job_salary_map[j].split('-')[1]) for j in suggestions],
+        'Minimum LPA': min_lpa,
+        'Maximum LPA': max_lpa,
     })
     st.bar_chart(chart_data.set_index("Job Role"))
 
     # Resume Tip
-    st.subheader("📝 Resume Tip")
+    st.subheader("\U0001F4DD Resume Tip")
     skill_keywords = [s.strip() for s in skills.split(',') if s.strip()]
     if skill_keywords and fav_subjects:
         resume_example = f"- Utilized {skill_keywords[0]} skills in {fav_subjects[0]} to explore careers in {suggestions[0]}"
@@ -126,11 +140,11 @@ if start:
     st.code(resume_example)
 
     # Location Advice
-    st.subheader("📍 Career Location Advice")
+    st.subheader("\U0001F4CD Career Location Advice")
     st.markdown(f"Jobs in **{location_pref or 'India'}** are growing in fields like **{suggestions[0]}**.")
 
     # PDF Report
-    st.subheader("📤 Download Your Report (PDF)")
+    st.subheader("\U0001F4C4 Download Your Report (PDF)")
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
@@ -138,17 +152,17 @@ if start:
     for job in suggestions:
         desc = job_description_map.get(job, "")
         sal = job_salary_map.get(job, "")
-        line = f"- {job}: {desc} (Salary: {sal} LPA)"
+        line = f"- {job}: {desc} (Salary: {sal})"
         pdf.multi_cell(0, 10, txt=line)
     pdf_output = f"{user_name or 'Jobzilla'}_report.pdf"
     pdf.output(pdf_output, "F")
     with open(pdf_output, "rb") as f:
         b64 = base64.b64encode(f.read()).decode()
-        href = f'<a href="data:application/pdf;base64,{b64}" download="{pdf_output}">📄 Download PDF</a>'
+        href = f'<a href="data:application/pdf;base64,{b64}" download="{pdf_output}">\U0001F4C4 Download PDF</a>'
         st.markdown(href, unsafe_allow_html=True)
 
     # Chatbot
-    st.subheader("🤖 Ask Jobzilla")
+    st.subheader("\U0001F916 Ask Jobzilla")
     user_question = st.text_input("Ask a career question")
     if user_question:
         try:
