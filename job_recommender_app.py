@@ -10,7 +10,7 @@ import requests
 import streamlit.components.v1 as components
 
 # ---------------------- API Key Setup ----------------------
-openai.api_key = st.secrets.get("OPENAI_API_KEY") or "your-api-key-here"
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # ---------------------- Helper Functions ----------------------
 def load_lottieurl(url):
@@ -211,7 +211,7 @@ if start:
     if user_question:
         try:
             response = openai.ChatCompletion.create(
-                model="gpt-4",
+                model="gpt-3.5-turbo"
                 messages=[
                     {"role": "system", "content": "You are Jobzilla, a friendly Indian career advisor."},
                     {"role": "user", "content": user_question}
