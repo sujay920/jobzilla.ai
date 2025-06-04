@@ -19,9 +19,9 @@ def load_lottieurl(url):
         r = requests.get(url)
         if r.status_code == 200:
             return r.json()
-    except:
+    except Exception as e:
+        st.error(f"Error loading Lottie animation from {url}: {e}")
         return None
-    return None
 
 def save_user_data(name, grade, fav_subjects, skills, dream_job, location, suggestions):
     with open("user_logs.csv", "a", newline='') as f:
@@ -84,89 +84,84 @@ job_description_map = {
 # ---------------------- Streamlit App UI ----------------------
 
 # --- Theme Toggling ---
-# Initialize session state for theme if not already set
 if "theme" not in st.session_state:
-    st.session_state.theme = "dark" # Default theme
+    st.session_state.theme = "dark"
 
-# Function to toggle theme
 def toggle_theme():
     if st.session_state.theme == "dark":
         st.session_state.theme = "light"
     else:
         st.session_state.theme = "dark"
 
-# Place the toggle button in the sidebar or a fixed position
-with st.sidebar:
-    st.button("Toggle Theme", on_click=toggle_theme)
-
-# Set page config based on the current theme
 st.set_page_config(
     page_title="Jobzilla AI",
     layout="wide",
-    initial_sidebar_state="expanded", # You might want to keep the sidebar expanded
-    # The theme parameter controls the overall Streamlit widgets and background
-    # This feature is available in Streamlit 1.10.0 and above
-    # For older versions, you'd rely purely on custom CSS
+    initial_sidebar_state="expanded",
     theme=st.session_state.theme
 )
 
-# Custom CSS for specific elements that Streamlit's theme doesn't fully control
-# This is crucial for your 'job-card' and potentially other custom elements
+with st.sidebar:
+    # Placeholder for a logo/image - Replace with your actual logo URL or local path
+    st.image("https://lottiefiles.com/images/logo/lottiefiles-logo-dark.png", use_column_width=True, caption="Your Jobzilla Logo Here")
+    st.title("Jobzilla Controls")
+    st.button("Toggle Theme", on_click=toggle_theme)
+    st.markdown("---")
+    st.write("Welcome to Jobzilla AI! Use the controls here.")
+
+# Custom CSS for specific elements
 if st.session_state.theme == "dark":
     st.markdown("""
         <style>
         .title {
             font-size: 40px;
-            color: #00BFFF; /* Bright blue for dark mode */
+            color: #00BFFF;
             font-weight: bold;
             text-align: center;
         }
         .job-card {
-            background-color: #222222; /* Dark background for cards */
+            background-color: #222222;
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 10px;
             box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
-            color: white; /* White text for dark mode cards */
+            color: white;
         }
-        /* Add other dark mode specific styles if needed */
         </style>
     """, unsafe_allow_html=True)
-else: # Light mode
+else:
     st.markdown("""
         <style>
         .title {
             font-size: 40px;
-            color: #1E90FF; /* Slightly darker blue for light mode */
+            color: #1E90FF;
             font-weight: bold;
             text-align: center;
         }
         .job-card {
-            background-color: #F0F2F6; /* Light background for cards */
+            background-color: #F0F2F6;
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 10px;
             box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
-            color: #333333; /* Darker text for light mode cards */
+            color: #333333;
         }
-        /* Add other light mode specific styles if needed */
         </style>
     """, unsafe_allow_html=True)
 
 st.markdown('<div class="title">✨ Jobzilla AI – Your Career Companion ✨</div>', unsafe_allow_html=True)
 
 
-# ---------------------- Animations ----------------------
+# ---------------------- Animations (Initial Welcome) ----------------------
 st.markdown("## ✨ Welcome to Jobzilla")
 col1, col2 = st.columns(2)
 with col1:
     lottie_1 = load_lottieurl("https://assets1.lottiefiles.com/packages/lf20_qp1q7mct.json")
     if lottie_1:
-        st_lottie(lottie_1, height=250, speed=1.2)
+        st_lottie(lottie_1, height=250, speed=1.2, key="welcome_animation_1")
 with col2:
     lottie_2 = load_lottieurl("https://assets2.lottiefiles.com/packages/lf20_9cyyl8i4.json")
     if lottie_2:
-        st_lottie(lottie_2, height=250, speed=1.1)
+        st_lottie(lottie_2, height=250, speed=1.1, key="welcome_animation_2")
 
 # ---------------------- Optional Sound ----------------------
 sound_url = "https://www.fesliyanstudios.com/play-mp3/387"
@@ -188,107 +183,53 @@ dream_job = st.text_input("🌟 Dream Job (optional)")
 location_pref = st.text_input("📍Preferred Job Location")
 start = st.button("🔮 Show Jobzilla Suggestions")
 
-# ---------------------- Main Logic ----------------------
+# ---------------------- Main Logic with Loading Animation ----------------------
 if start:
-    st.success(f"Hi {user_name or 'Friend'}, here's what Jobzilla found for you!")
-    time.sleep(1.5)
+    # --- Loading Animation Section ---
+    # YOUR CUSTOM LOTTIE LOADING ANIMATION URL
+    custom_loading_lottie_url = "https://lottie.host/65797fe4-aad1-4a09-9475-e5f2e4bfa1a2/QqoZqQxECo.lottie"
+    custom_loading_lottie = load_lottieurl(custom_loading_lottie_url)
 
-    lottie_results = load_lottieurl("https://lottie.host/b3d3efb4-128c-499a-bc68-cba7d50f6e6c/Result.json")
-    if lottie_results:
-        st_lottie(lottie_results, height=200, speed=1)
+    with st.spinner("Jobzilla is crunching numbers... Please wait!",):
+        if custom_loading_lottie:
+            st_lottie(custom_loading_lottie, height=100, speed=1, loop=True, key="loading_animation")
+        time.sleep(2) # Simulate some processing time before showing results
 
-    suggestions = []
-    skill_keywords = [s.strip() for s in skills.split(',') if s.strip()]
-    job_scores = {}
+        st.success(f"Hi {user_name or 'Friend'}, here's what Jobzilla found for you!")
+        time.sleep(1.5)
 
-    for job in job_description_map:
-        score = 0
-        if dream_job and dream_job.lower() in job.lower():
-            score += 3
-        for subj in fav_subjects:
-            if job in subject_career_map.get(subj, []):
-                score += 2
-        for skill in skill_keywords:
-            if skill.lower() in job.lower():
-                score += 1
-        job_scores[job] = score
+        lottie_results = load_lottieurl("https://lottie.host/b3d3efb4-128c-499a-bc68-cba7d50f6e6c/Result.json")
+        if lottie_results:
+            st_lottie(lottie_results, height=200, speed=1, key="results_animation")
 
-    sorted_jobs = sorted(job_scores.items(), key=lambda x: x[1], reverse=True)
-    suggestions = [job for job, score in sorted_jobs if score > 0][:5]
-    if not suggestions:
-        suggestions = list(job_description_map.keys())[:5]
+        suggestions = []
+        skill_keywords = [s.strip() for s in skills.split(',') if s.strip()]
+        job_scores = {}
 
-    save_user_data(user_name, grade, fav_subjects, skills, dream_job, location_pref, suggestions)
+        for job in job_description_map:
+            score = 0
+            if dream_job and dream_job.lower() in job.lower():
+                score += 3
+            for subj in fav_subjects:
+                if job in subject_career_map.get(subj, []):
+                    score += 2
+            for skill in skill_keywords:
+                if skill.lower() in job.lower():
+                    score += 1
+            job_scores[job] = score
 
+        sorted_jobs = sorted(job_scores.items(), key=lambda x: x[1], reverse=True)
+        suggestions = [job for job, score in sorted_jobs if score > 0][:5]
+        if not suggestions:
+            suggestions = list(job_description_map.keys())[:5]
+
+        save_user_data(user_name, grade, fav_subjects, skills, dream_job, location_pref, suggestions)
+
+    # Results are displayed AFTER the spinner block finishes
     st.subheader("💼 Suggested Careers")
     for job in suggestions:
         st.markdown(f"""
         <div class="job-card">
             <h4>🎯 {job}</h4>
             <p><strong>Description:</strong> {job_description_map.get(job)}</p>
-            <p><strong>💰 Salary Range:</strong> {job_salary_map.get(job)} LPA</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.subheader("📊 Salary Comparison")
-    def parse_salary_range(salary_str):
-        parts = salary_str.replace("LPA", "").strip().split("-")
-        try:
-            return int(parts[0]), int(parts[1])
-        except:
-            return 0, 0
-
-    salary_data = [parse_salary_range(job_salary_map[j]) for j in suggestions]
-    min_lpa = [x[0] for x in salary_data]
-    max_lpa = [x[1] for x in salary_data]
-
-    chart_data = pd.DataFrame({
-        'Job Role': suggestions,
-        'Minimum LPA': min_lpa,
-        'Maximum LPA': max_lpa,
-    })
-    st.bar_chart(chart_data.set_index("Job Role"))
-
-    st.subheader("📝 Resume Tip")
-    if skill_keywords and fav_subjects:
-        resume_example = f"- Utilized {skill_keywords[0]} skills in {fav_subjects[0]} to explore careers in {suggestions[0]}"
-    else:
-        resume_example = f"- Passionate about learning and applying knowledge to grow in the field of {suggestions[0]}"
-    st.code(resume_example)
-
-    st.subheader("📍 Career Location Advice")
-    st.markdown(f"Jobs in **{location_pref or 'India'}** are growing in fields like **{suggestions[0]}**.")
-
-    st.subheader("📤 Download Your Report (PDF)")
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=12)
-    pdf.cell(200, 10, txt=f"Jobzilla Report for {user_name or 'Student'}", ln=True, align='C')
-    for job in suggestions:
-        desc = job_description_map.get(job, "")
-        sal = job_salary_map.get(job, "")
-        line = f"- {job}: {desc} (Salary: {sal} LPA)"
-        pdf.multi_cell(0, 10, txt=line)
-    pdf_output = f"{user_name or 'Jobzilla'}_report.pdf"
-    pdf.output(pdf_output, "F")
-    with open(pdf_output, "rb") as f:
-        b64 = base64.b64encode(f.read()).decode()
-        href = f'<a href="data:application/pdf;base64,{b64}" download="{pdf_output}">📄 Download PDF</a>'
-        st.markdown(href, unsafe_allow_html=True)
-
-# ---------------------- Gemini AI Feature ----------------------
-st.subheader("🤖 Ask Jobzilla")
-user_question = st.text_input("Ask a career question")
-
-# Correcting the model name as discussed previously
-GEMINI_MODEL = "gemini-1.5-flash" # Or "gemini-1.5-pro" if you prefer
-
-if "GEMINI_API_KEY" not in st.secrets:
-    st.warning("⚠️ Gemini API key not found. Please add it in Streamlit Cloud > Secrets.")
-elif user_question:
-    try:
-        model = genai.GenerativeModel(GEMINI_MODEL)
-        response = model.generate_content(user_question)
-        st.markdown(f"**Jobzilla Says:** {response.text}")
-    except Exception as e:
-        st.error(f"⚠️ AI feature error: {e}")
+            <p><strong>💰 Salary Range:</strong> {job_
