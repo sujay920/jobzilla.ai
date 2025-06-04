@@ -206,17 +206,20 @@ if start:
         href = f'<a href="data:application/pdf;base64,{b64}" download="{pdf_output}">📄 Download PDF</a>'
         st.markdown(href, unsafe_allow_html=True)
 
-    st.subheader("🤖 Ask Jobzilla")
-    user_question = st.text_input("Ask a career question")
-    if user_question:
-        try:
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": "You are Jobzilla, a friendly Indian career advisor."},
-                    {"role": "user", "content": user_question}
-                ]
-            )
-            st.write(response["choices"][0]["message"]["content"])
-        except Exception as e:
-            st.error("OpenAI API Error: " + str(e))
+# ---------------------- AI Chat Feature ----------------------
+st.subheader("🤖 Ask Jobzilla")
+user_question = st.text_input("Ask a career question")
+if user_question:
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are Jobzilla, a friendly Indian career advisor."},
+                {"role": "user", "content": user_question}
+            ]
+        )
+        answer = response["choices"][0]["message"]["content"]
+        st.write(answer)
+    except Exception as e:
+        st.error(f"OpenAI API call failed: {e}")
+
