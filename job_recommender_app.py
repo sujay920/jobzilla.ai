@@ -201,6 +201,11 @@ if start:
     st.subheader("🤖 Ask Jobzilla")
     user_question = st.text_input("Ask a career question")
     if user_question:
-        model = genai.GenerativeModel("gemini-pro")
-        response = model.generate_content(user_question)
-        st.markdown(f"**Jobzilla Says:** {response.text}")
+        try:
+            model = genai.GenerativeModel("gemini-pro")
+            convo = model.start_chat()
+            convo.send_message(user_question)
+            st.markdown(f"**Jobzilla Says:** {convo.last.text}")
+        except Exception as e:
+            st.error(f"⚠️ AI feature error: {e}")
+
