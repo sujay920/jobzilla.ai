@@ -1,16 +1,16 @@
 import streamlit as st
 import pandas as pd
 import time
-import openai
 from fpdf import FPDF
 from PIL import Image
 import base64
 from streamlit_lottie import st_lottie
 import requests
 import streamlit.components.v1 as components
+import google.generativeai as genai
 
 # ---------------------- API Key Setup ----------------------
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 # ---------------------- Helper Functions ----------------------
 def load_lottieurl(url):
@@ -110,19 +110,6 @@ Your browser does not support the audio element.
 """
 st.components.v1.html(sound_html, height=0)
 
-st.markdown("""
-<audio id="click-sound" src="https://www.soundjay.com/button/sounds/button-3.mp3" preload="auto"></audio>
-<script>
-const btn = window.parent.document.querySelector('button[kind="secondary"]');
-if (btn) {
-    btn.addEventListener('click', () => {
-        const audio = window.parent.document.getElementById('click-sound');
-        if (audio) audio.play();
-    });
-}
-</script>
-""", unsafe_allow_html=True)
-
 # ---------------------- Profile Input ----------------------
 st.header("Customize Jobzilla")
 user_name = st.text_input("👤 Your Name")
@@ -144,8 +131,7 @@ if start:
 
     suggestions = []
     for job in job_description_map:
-        # match dream job or favorite subjects with job name (case insensitive)
-        if (dream_job and dream_job.lower() in job.lower()) or any(subj.lower() in job.lower() for subj in fav_subjects):
+        if dream_job.lower() in job.lower() or any(subj.lower() in job.lower() for subj in fav_subjects):
             suggestions.append(job)
     if not suggestions:
         suggestions = list(job_description_map.keys())[:5]
@@ -207,26 +193,12 @@ if start:
         href = f'<a href="data:application/pdf;base64,{b64}" download="{pdf_output}">📄 Download PDF</a>'
         st.markdown(href, unsafe_allow_html=True)
 
-    # ---------------- AI Chat Feature ----------------
     st.subheader("🤖 Ask Jobzilla")
     user_question = st.text_input("Ask a career question")
     if user_question:
-       from openai import OpenAI  # Add this import at top of your file (if not there)
-
-# Initialize OpenAI client once (somewhere at top, after API key setup)
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-
-# Inside your Streamlit interaction block where user_question is used:
-if user_question:
-    try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",  # or "gpt-4" if you have access
-            messages=[
-                {"role": "system", "content": "You are Jobzilla, a friendly Indian career advisor."},
-                {"role": "user", "content": user_question}
-            ]
-        )
-        answer = response.choices[0].message.content
-        st.write(answer)
-    except Exception as e:
-        st.error(f"OpenAI API Error: {e}")
+        try:
+            model = genai.GenerativeModel('gemini-pro')
+            response = model.generate_content(user_question)
+            st.write(response.text)
+        except Exception as e:
+            st.error(f"Gemini API Error: {e}")
