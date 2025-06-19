@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Features from './components/Features';
 import CareerRecommendations from './components/CareerRecommendations';
+import AskJobzilla from './components/AskJobzilla';
 import Footer from './components/Footer';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
               <Hero />
               <Features />
               <CareerRecommendations />
+              <AskJobzilla />
             </>
           } />
         </Routes>

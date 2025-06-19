@@ -19,7 +19,7 @@ const Navbar = () => {
     { name: 'Home', href: '#home' },
     { name: 'Features', href: '#features' },
     { name: 'Careers', href: '#careers' },
-    { name: 'About', href: '#about' },
+    { name: 'Ask AI', href: '#ask-jobzilla' },
     { name: 'Contact', href: '#contact' },
   ];
 
