@@ -5,33 +5,56 @@ import { ArrowRight, Sparkles, Zap, Target, Brain } from 'lucide-react';
 const Hero = () => {
   return (
     <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
-      {/* Animated Background Elements */}
+      {/* Spline 3D Background */}
+      <div className="absolute inset-0 z-0">
+        <iframe 
+          src="https://my.spline.design/untitled-80eae59e63874569b7178c689e5624"
+          className="w-full h-full border-none"
+          style={{ pointerEvents: 'none' }}
+        />
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-dark-900/40 backdrop-blur-sm"></div>
+      </div>
+
+      {/* Neon Glow Effects */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div 
           animate={{ 
             x: [0, 100, 0],
             y: [0, -50, 0],
-            scale: [1, 1.2, 1]
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.6, 0.3]
           }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute top-1/4 left-1/4 w-64 h-64 bg-accent-blue/10 rounded-full blur-3xl"
+          className="absolute top-1/4 left-1/4 w-64 h-64 bg-accent-blue/20 rounded-full blur-3xl animate-pulse"
+          style={{ 
+            boxShadow: '0 0 100px rgba(0, 191, 255, 0.3), 0 0 200px rgba(0, 191, 255, 0.1)' 
+          }}
         />
         <motion.div 
           animate={{ 
             x: [0, -80, 0],
             y: [0, 60, 0],
-            scale: [1, 0.8, 1]
+            scale: [1, 0.8, 1],
+            opacity: [0.4, 0.7, 0.4]
           }}
           transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-purple/10 rounded-full blur-3xl"
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-purple/20 rounded-full blur-3xl animate-pulse"
+          style={{ 
+            boxShadow: '0 0 120px rgba(139, 92, 246, 0.3), 0 0 240px rgba(139, 92, 246, 0.1)' 
+          }}
         />
         <motion.div 
           animate={{ 
             rotate: [0, 360],
-            scale: [1, 1.1, 1]
+            scale: [1, 1.1, 1],
+            opacity: [0.2, 0.5, 0.2]
           }}
           transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-accent-pink/5 to-transparent rounded-full"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-accent-pink/10 to-transparent rounded-full"
+          style={{ 
+            boxShadow: '0 0 150px rgba(236, 72, 153, 0.2)' 
+          }}
         />
       </div>
 
@@ -51,9 +74,9 @@ const Hero = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="flex items-center justify-center mb-6"
             >
-              <div className="glass px-6 py-3 rounded-full border border-accent-blue/30 flex items-center space-x-3">
+              <div className="glass px-6 py-3 rounded-full border border-accent-blue/30 flex items-center space-x-3 backdrop-blur-md">
                 <Brain className="w-5 h-5 text-accent-blue animate-pulse" />
-                <span className="text-accent-blue font-medium">AI-Powered Career Intelligence</span>
+                <span className="text-accent-blue font-medium">Built in 2025 • AI-Powered</span>
                 <Sparkles className="w-5 h-5 text-accent-purple animate-pulse" />
               </div>
             </motion.div>
@@ -64,6 +87,7 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.4 }}
               className="text-5xl md:text-7xl lg:text-8xl font-bold font-poppins mb-6 leading-tight"
+              style={{ textShadow: '0 0 30px rgba(0, 191, 255, 0.3)' }}
             >
               Your Dream Career
               <br />
@@ -76,8 +100,9 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.6 }}
               className="text-xl md:text-2xl text-gray-300 mb-10 leading-relaxed max-w-3xl mx-auto"
+              style={{ textShadow: '0 0 20px rgba(255, 255, 255, 0.1)' }}
             >
-              Unlock your potential with AI-driven career recommendations tailored to your unique skills, passions, and aspirations.
+              Unlock your potential with AI-driven career recommendations. A personal project inspired by 2025's AI innovation.
             </motion.p>
           </motion.div>
 
@@ -92,6 +117,9 @@ const Hero = () => {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               className="btn-primary px-10 py-4 rounded-full font-semibold text-lg flex items-center justify-center group shadow-2xl"
+              style={{ 
+                boxShadow: '0 0 30px rgba(0, 191, 255, 0.4), 0 10px 25px rgba(0, 0, 0, 0.3)' 
+              }}
             >
               Discover Your Path
               <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
@@ -101,8 +129,11 @@ const Hero = () => {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               className="glass px-10 py-4 rounded-full font-semibold text-lg border border-white/20 hover:border-accent-blue/50 transition-all duration-300 backdrop-blur-md"
+              style={{ 
+                boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)' 
+              }}
             >
-              Watch Demo
+              Explore Features
             </motion.button>
           </motion.div>
 
@@ -129,7 +160,7 @@ const Hero = () => {
               {
                 icon: <Sparkles className="w-10 h-10" />,
                 title: "Future-Ready Insights",
-                description: "Stay ahead with emerging career trends and opportunities",
+                description: "Built with 2025's latest AI technologies",
                 color: "from-accent-pink to-accent-blue"
               }
             ].map((feature, index) => (
@@ -139,7 +170,10 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1.2 + index * 0.2 }}
                 whileHover={{ y: -10, scale: 1.02 }}
-                className="glass p-8 rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-500 card-hover group"
+                className="glass p-8 rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-500 card-hover group backdrop-blur-md"
+                style={{ 
+                  boxShadow: '0 0 20px rgba(255, 255, 255, 0.05)' 
+                }}
               >
                 <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} p-3 mb-6 group-hover:scale-110 transition-transform duration-300 mx-auto`}>
                   <div className="text-white flex items-center justify-center h-full">
@@ -163,13 +197,16 @@ const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
       >
         <motion.div 
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
           className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center cursor-pointer hover:border-accent-blue/50 transition-colors duration-300"
           onClick={() => document.querySelector('#features')?.scrollIntoView({ behavior: 'smooth' })}
+          style={{ 
+            boxShadow: '0 0 15px rgba(0, 191, 255, 0.2)' 
+          }}
         >
           <motion.div 
             animate={{ y: [0, 12, 0] }}

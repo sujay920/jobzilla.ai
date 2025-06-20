@@ -7,7 +7,7 @@ const Features = () => {
     {
       icon: <Brain className="w-8 h-8" />,
       title: "Smart AI Analysis",
-      description: "Our advanced AI analyzes your skills, interests, and market trends to provide accurate career recommendations.",
+      description: "Advanced AI analyzes your skills, interests, and market trends to provide accurate career recommendations.",
       color: "from-blue-500 to-cyan-500"
     },
     {
@@ -36,17 +36,10 @@ const Features = () => {
     },
     {
       icon: <Award className="w-8 h-8" />,
-      title: "Success Tracking",
-      description: "Monitor your progress and celebrate milestones as you advance toward your career goals.",
+      title: "Future-Ready",
+      description: "Built with 2025's latest AI technologies to provide cutting-edge career guidance.",
       color: "from-indigo-500 to-purple-500"
     }
-  ];
-
-  const stats = [
-    { number: "100K+", label: "Students Guided", icon: <Users className="w-6 h-6" /> },
-    { number: "98%", label: "Success Rate", icon: <Target className="w-6 h-6" /> },
-    { number: "500+", label: "Career Paths", icon: <Zap className="w-6 h-6" /> },
-    { number: "24/7", label: "AI Support", icon: <Brain className="w-6 h-6" /> }
   ];
 
   return (
@@ -59,7 +52,7 @@ const Features = () => {
             y: [0, -30, 0]
           }}
           transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          className="absolute top-0 left-1/3 w-72 h-72 bg-accent-purple/5 rounded-full blur-3xl"
+          className="absolute top-0 left-1/3 w-72 h-72 bg-accent-purple/10 rounded-full blur-3xl"
         />
         <motion.div 
           animate={{ 
@@ -67,7 +60,7 @@ const Features = () => {
             y: [0, 40, 0]
           }}
           transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-          className="absolute bottom-0 right-1/3 w-96 h-96 bg-accent-blue/5 rounded-full blur-3xl"
+          className="absolute bottom-0 right-1/3 w-96 h-96 bg-accent-blue/10 rounded-full blur-3xl"
         />
       </div>
 
@@ -95,7 +88,7 @@ const Features = () => {
             Why Choose <span className="gradient-text">Jobzilla AI</span>?
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Experience the future of career guidance with our cutting-edge AI technology and personalized approach to professional development.
+            Experience the future of career guidance with cutting-edge AI technology and personalized approach to professional development.
           </p>
         </motion.div>
 
@@ -132,40 +125,34 @@ const Features = () => {
           ))}
         </div>
 
-        {/* Stats Section */}
+        {/* Project Highlight */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="glass p-10 rounded-3xl border border-white/10 backdrop-blur-md"
+          className="glass p-10 rounded-3xl border border-white/10 backdrop-blur-md text-center"
         >
-          <div className="grid md:grid-cols-4 gap-8 text-center">
-            {stats.map((stat, index) => (
-              <motion.div 
-                key={index}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ scale: 1.05 }}
-                className="group cursor-pointer"
-              >
-                <div className="flex items-center justify-center mb-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-accent-blue to-accent-purple p-3 group-hover:scale-110 transition-transform duration-300">
-                    <div className="text-white flex items-center justify-center h-full">
-                      {stat.icon}
-                    </div>
-                  </div>
-                </div>
-                <div className="text-4xl md:text-5xl font-bold gradient-text mb-2 group-hover:scale-110 transition-transform duration-300">
-                  {stat.number}
-                </div>
-                <div className="text-gray-400 font-medium text-lg">
-                  {stat.label}
-                </div>
-              </motion.div>
-            ))}
+          <div className="max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="w-20 h-20 rounded-full bg-gradient-to-br from-accent-blue to-accent-purple p-5 mx-auto mb-6"
+            >
+              <Brain className="w-full h-full text-white" />
+            </motion.div>
+            <h3 className="text-3xl md:text-4xl font-bold gradient-text mb-4">
+              AI-Powered Career Discovery
+            </h3>
+            <p className="text-xl text-gray-300 leading-relaxed mb-6">
+              Built in 2025 with the latest AI technologies, Jobzilla represents the future of personalized career guidance. 
+              This project combines machine learning insights with intuitive design to help you discover your perfect career path.
+            </p>
+            <div className="text-accent-blue font-semibold text-lg">
+              Inspired by AI Innovation • Built for the Future
+            </div>
           </div>
         </motion.div>
       </div>
