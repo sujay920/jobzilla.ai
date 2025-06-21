@@ -3,19 +3,12 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Zap, Target, Brain } from 'lucide-react';
 
 const Hero = () => {
+  const scrollToCareerSection = () => {
+    document.querySelector('#careers')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
-      {/* Spline 3D Background */}
-      <div className="absolute inset-0 z-0">
-        <iframe 
-          src="https://my.spline.design/untitled-80eae59e63874569b7178c689e5624"
-          className="w-full h-full border-none"
-          style={{ pointerEvents: 'none' }}
-        />
-        {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-dark-900/40 backdrop-blur-sm"></div>
-      </div>
-
       {/* Neon Glow Effects */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div 
@@ -116,18 +109,20 @@ const Hero = () => {
             <motion.button 
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
+              onClick={scrollToCareerSection}
               className="btn-primary px-10 py-4 rounded-full font-semibold text-lg flex items-center justify-center group shadow-2xl"
               style={{ 
                 boxShadow: '0 0 30px rgba(0, 191, 255, 0.4), 0 10px 25px rgba(0, 0, 0, 0.3)' 
               }}
             >
-              Discover Your Path
+              Get Career Recommendations
               <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
             </motion.button>
             
             <motion.button 
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => document.querySelector('#features')?.scrollIntoView({ behavior: 'smooth' })}
               className="glass px-10 py-4 rounded-full font-semibold text-lg border border-white/20 hover:border-accent-blue/50 transition-all duration-300 backdrop-blur-md"
               style={{ 
                 boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)' 
