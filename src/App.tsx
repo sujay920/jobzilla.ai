@@ -8,7 +8,6 @@ import AskJobzilla from './components/AskJobzilla';
 import About from './components/About';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
-import FloatingChatBot from './components/FloatingChatBot';
 
 function App() {
   return (
@@ -28,8 +27,9 @@ function App() {
             </>
           } />
         </Routes>
-        <FloatingChatBot />
       </div>
     </Router>
   );
 }
+
+export default App;
