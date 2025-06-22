@@ -9,19 +9,30 @@ const Hero = () => {
 
   return (
     <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
-      {/* Neon Glow Effects */}
-      <div className="absolute inset-0 overflow-hidden">
+      {/* Spline 3D Background */}
+      <div className="absolute inset-0 z-0">
+        <iframe 
+          src="https://my.spline.design/untitled-8V8gOwxGE8o2v0ztlRfQ5tzD/"
+          className="w-full h-full border-none"
+          style={{ pointerEvents: 'none' }}
+        />
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-dark-900/40 backdrop-blur-sm"></div>
+      </div>
+
+      {/* Enhanced Neon Glow Effects */}
+      <div className="absolute inset-0 overflow-hidden z-10">
         <motion.div 
           animate={{ 
             x: [0, 100, 0],
             y: [0, -50, 0],
             scale: [1, 1.2, 1],
-            opacity: [0.3, 0.6, 0.3]
+            opacity: [0.4, 0.7, 0.4]
           }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute top-1/4 left-1/4 w-64 h-64 bg-accent-blue/20 rounded-full blur-3xl animate-pulse"
+          className="absolute top-1/4 left-1/4 w-64 h-64 bg-accent-blue/25 rounded-full blur-3xl animate-pulse"
           style={{ 
-            boxShadow: '0 0 100px rgba(0, 191, 255, 0.3), 0 0 200px rgba(0, 191, 255, 0.1)' 
+            boxShadow: '0 0 100px rgba(0, 191, 255, 0.4), 0 0 200px rgba(0, 191, 255, 0.2)' 
           }}
         />
         <motion.div 
@@ -29,29 +40,29 @@ const Hero = () => {
             x: [0, -80, 0],
             y: [0, 60, 0],
             scale: [1, 0.8, 1],
-            opacity: [0.4, 0.7, 0.4]
+            opacity: [0.5, 0.8, 0.5]
           }}
           transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-purple/20 rounded-full blur-3xl animate-pulse"
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-purple/25 rounded-full blur-3xl animate-pulse"
           style={{ 
-            boxShadow: '0 0 120px rgba(139, 92, 246, 0.3), 0 0 240px rgba(139, 92, 246, 0.1)' 
+            boxShadow: '0 0 120px rgba(139, 92, 246, 0.4), 0 0 240px rgba(139, 92, 246, 0.2)' 
           }}
         />
         <motion.div 
           animate={{ 
             rotate: [0, 360],
             scale: [1, 1.1, 1],
-            opacity: [0.2, 0.5, 0.2]
+            opacity: [0.3, 0.6, 0.3]
           }}
           transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-accent-pink/10 to-transparent rounded-full"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-accent-pink/15 to-transparent rounded-full"
           style={{ 
-            boxShadow: '0 0 150px rgba(236, 72, 153, 0.2)' 
+            boxShadow: '0 0 150px rgba(236, 72, 153, 0.3)' 
           }}
         />
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-6 relative z-20">
         <div className="text-center max-w-5xl mx-auto">
           {/* Main Content */}
           <motion.div
@@ -192,7 +203,7 @@ const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30"
       >
         <motion.div 
           animate={{ y: [0, 10, 0] }}
